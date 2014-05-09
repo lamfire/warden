@@ -1,8 +1,12 @@
 package com.lamfire.warden;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
+import java.nio.charset.Charset;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.lamfire.utils.StringUtils;
@@ -17,16 +21,45 @@ public class ActionContext {
 	private ChannelHandlerContext ctx;
     private ByteArrayOutputStream responseWriter = new  ByteArrayOutputStream();
     private byte[] httpRequestData;
+    private QueryStringDecoder queryStringDecoder;
+    private Map<String,List<String>> httpRequestParameters;
 	
 	ActionContext(ChannelHandlerContext ctx,HttpRequest request){
 		this.request = request;
 		this.ctx = ctx;
 		this.response =  new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK);
+        this.queryStringDecoder = new QueryStringDecoder(request.getUri());
 	}
 	
 	Channel getChannel(){
 		return ctx.getChannel();
 	}
+
+    public void writeResponse(String message) {
+        if(message == null){
+            return ;
+        }
+        writeResponse(message.getBytes());
+    }
+
+    public void writeResponse(String message,Charset charset) {
+        if(message == null){
+            return ;
+        }
+        writeResponse(message.getBytes(charset));
+
+    }
+
+    public void writeResponse(byte[] message) {
+        if(message == null){
+            return ;
+        }
+        try {
+            this.responseWriter.write(message);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public synchronized byte[] getHttpRequestData(){
         if(this.httpRequestData != null){
@@ -97,8 +130,41 @@ public class ActionContext {
 	}
 	
 	public String getHttpRequestUri(){
-		return request.getUri();
+		return queryStringDecoder.getPath();
 	}
+
+    public synchronized Map<String,List<String>> getHttpRequestParameters(){
+        if(httpRequestParameters != null){
+            return httpRequestParameters;
+        }
+
+        if (request.getMethod().equals(HttpMethod.GET)){
+            this.httpRequestParameters = queryStringDecoder.getParameters();
+        }
+        byte[] data = this.getHttpRequestData();
+        if(data != null){
+            String queryString = "?" + new String(data);
+            QueryStringDecoder decoder = new QueryStringDecoder(queryString);
+            this.httpRequestParameters = decoder.getParameters();
+        }
+        return httpRequestParameters;
+    }
+
+    public List<String> getHttpRequestParameters(String name){
+        return  getHttpRequestParameters().get(name);
+    }
+
+    public String getHttpRequestParameter(String name){
+        List<String> list =  getHttpRequestParameters().get(name);
+        if(!list.isEmpty()){
+            return list.get(0);
+        }
+        return null;
+    }
+
+    public Set<String> getHttpRequestParameterNames(){
+        return getHttpRequestParameters().keySet();
+    }
 	
 	public void addHttpResponseHeader(String key,Object value){
 		this.response.addHeader(key, value);

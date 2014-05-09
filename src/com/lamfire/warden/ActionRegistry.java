@@ -12,15 +12,49 @@ import com.lamfire.warden.anno.ACTION;
 
 public class ActionRegistry {
 	private static final Logger LOGGER = Logger.getLogger(ActionRegistry.class);
-	private final Map<String,Action> mapping = new HashMap<String, Action>();
-	
-	public void mapping(String uri,Action action){
-		mapping.put(uri, action);
-		LOGGER.info("[mapping]:" + uri +" -> " + action.getClass().getName());
+	private final Map<String,ActionFactory> mapping = new HashMap<String, ActionFactory>();
+
+    public void mapping(Class<? extends Action> actionClass){
+        ACTION actionAnno = actionClass.getAnnotation(ACTION.class);
+        if(actionAnno == null){
+            LOGGER.warn("["+actionClass.getName() + "] is assignable from Action,but not found 'ACTOIN' annotation.");
+            return;
+        }
+        String uri = actionAnno.path();
+        if(actionAnno.singleton() ){
+            mappingSingletonAction(uri,actionClass);
+        } else if(actionAnno.enableBoundParameters()){
+            mappingParamBoundAction(uri,actionClass);
+        } else{
+            mappingAction(uri,actionClass);
+        }
+    }
+
+	public void mappingAction(String uri,Class<? extends Action> actionClass){
+		mapping.put(uri, new DefaultActionFactory(actionClass));
+		LOGGER.info("[mappingAction]:" + uri +" -> " + actionClass.getName());
 	}
+
+    public void mappingSingletonAction(String uri,Class<? extends Action> actionClass) {
+        mapping.put(uri, new SingletonActionFactory(actionClass));
+        LOGGER.info("[mappingSingletonAction]:" + uri +" -> " + actionClass.getName());
+    }
+
+    public void mappingParamBoundAction(String uri,Class<? extends Action> actionClass) {
+        mapping.put(uri, new ParamBoundActionFactory(actionClass));
+        LOGGER.info("[mappingParamBoundAction]:" + uri +" -> " + actionClass.getName());
+    }
+
+    public ActionFactory getActionFactory(String uri){
+        return mapping.get(uri);
+    }
 	
-	public Action lookup(String uri){
-		return mapping.get(uri);
+	public Action lookup(ActionContext context){
+        ActionFactory factory = getActionFactory(context.getHttpRequestUri());
+        if(factory == null){
+            return null;
+        }
+        return factory.make(context);
 	}
 	
 	public void mappingPackage(String packageName) throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException{
@@ -29,17 +63,8 @@ public class ActionRegistry {
 			if(!Action.class.isAssignableFrom(clzz)){
 				continue;
 			}
-			
-			ACTION action = clzz.getAnnotation(ACTION.class);
-			if(action == null){
-				LOGGER.warn("["+clzz.getName() + "] is assignable from Action,but not found 'ACTOIN' annotation.");
-				continue;
-			}
-
-			String uri = action.path();
-			Object obj = clzz.newInstance();
-			mapping(uri,(Action)obj);
-			
+            Class<? extends Action> actionClass =  (Class<? extends Action>)clzz;
+            mapping(actionClass);
 		}
 	}
 }

@@ -27,13 +27,10 @@ class HttpServerHandler extends SimpleChannelUpstreamHandler {
 		this.worker = worker;
 	}
 
-	protected Action getAction(HttpRequest request) throws ActionNotFoundException {
-		QueryStringDecoder decoder = new QueryStringDecoder(request.getUri());
-		String uri = decoder.getPath();
-
-		Action action = registry.lookup(uri);
+	protected Action getAction(ActionContext context) throws ActionNotFoundException {
+		Action action = registry.lookup(context);
 		if (action == null) {
-			throw new ActionNotFoundException("Not found action mapping URI:" + uri);
+			throw new ActionNotFoundException("Not found action mapping URI:" + context.getHttpRequestUri());
 		}
 
         return action;
@@ -48,8 +45,8 @@ class HttpServerHandler extends SimpleChannelUpstreamHandler {
 		HttpRequest request = (HttpRequest) e.getMessage();
 
 		try {
-            Action action = getAction(request);
             ActionContext context = new ActionContext(ctx, request);
+            Action action = getAction(context);
             invokeAction(context,action);
 		} catch (Throwable t) {
 			HttpResponseWriters.writeError(ctx.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR);

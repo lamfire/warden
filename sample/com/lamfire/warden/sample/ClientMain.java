@@ -6,13 +6,14 @@ import com.lamfire.json.JSON;
 import com.lamfire.utils.HttpClient;
 
 public class ClientMain {
-	
+
+    static String URL = "http://192.168.1.80:8080/echo?a=1";
 
 	public static void post() throws IOException {
 		HttpClient client = new HttpClient();
 		client.setContentType(HttpClient.ContentType.application_x_www_form_urlencoded);
 		client.setMethod("POST");
-		client.open("http://192.168.1.80:8080/echo?a=1");
+		client.open(URL);
 		//client.open("http://192.168.9.125:8080/");
 		
 		
@@ -37,7 +38,7 @@ public class ClientMain {
 		js.put("appsecrt", "{'a':'6788945141'}");
 		
 		
-		client.open("http://192.168.1.80:8080/echo?" + js.toJSONString());
+		client.open(URL + js.toJSONString());
 		byte[] ret = client.read();
 		System.out.println("GET_RESULT["+ ret.length +"]:" + new String(ret));
 		

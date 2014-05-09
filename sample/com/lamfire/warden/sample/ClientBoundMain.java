@@ -12,12 +12,14 @@ public class ClientBoundMain {
 		HttpClient client = new HttpClient();
 		client.setContentType(HttpClient.ContentType.application_x_www_form_urlencoded);
 		client.setMethod("POST");
-		//client.open("http://192.168.1.80:8080");
-		client.open("http://192.168.9.125:8080");
+		client.open("http://192.168.1.80:8080");
+		//client.open("http://192.168.9.125:8080");
 		
 		
 		client.addPostParameter("name","lamfire");
         client.addPostParameter("age","18");
+        client.addPostParameter("items","11");
+        client.addPostParameter("items","12");
 		client.post();
 
 		byte[] ret = client.read();
