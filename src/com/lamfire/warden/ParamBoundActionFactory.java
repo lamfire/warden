@@ -33,7 +33,7 @@ public class ParamBoundActionFactory extends DefaultActionFactory {
             }
         }
         if(LOGGER.isDebugEnabled()){
-            LOGGER.debug("[BINDING Parameters]:" + map);
+            LOGGER.debug("[BINDING]:" + map);
         }
         super.getObjectFactory().setProperties(action,map);
         return action;

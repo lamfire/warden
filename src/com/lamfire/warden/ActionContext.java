@@ -20,7 +20,7 @@ public class ActionContext {
 	private HttpResponse response;
 	private ChannelHandlerContext ctx;
     private ByteArrayOutputStream responseWriter = new  ByteArrayOutputStream();
-    private byte[] httpRequestData;
+    private byte[] httpRequestContentAsBytes;
     private QueryStringDecoder queryStringDecoder;
     private Map<String,List<String>> httpRequestParameters;
 	
@@ -65,19 +65,23 @@ public class ActionContext {
         HttpResponseWriters.writeRedirectResponse(getChannel(),redirectUrl);
     }
 
-    public synchronized byte[] getHttpRequestData(){
-        if(this.httpRequestData != null){
-            return this.httpRequestData;
+    public synchronized byte[] getHttpRequestContentAsBytes(){
+        if(this.httpRequestContentAsBytes != null){
+            return this.httpRequestContentAsBytes;
         }
         if (request.getMethod().equals(HttpMethod.GET)) {
             String queryString = StringUtils.substringAfter(request.getUri(), "?");
-            this.httpRequestData = queryString.getBytes();
+            this.httpRequestContentAsBytes = queryString.getBytes();
         } else{
             ChannelBuffer reqBuffer = request.getContent();
-            this.httpRequestData = reqBuffer.array();
+            this.httpRequestContentAsBytes = reqBuffer.array();
         }
 
-        return this.httpRequestData;
+        return this.httpRequestContentAsBytes;
+    }
+
+    public synchronized String getHttpRequestContentAsString(){
+          return new String(getHttpRequestContentAsBytes());
     }
 
 	public String getRemoteAddress(){
@@ -153,7 +157,7 @@ public class ActionContext {
         if (request.getMethod().equals(HttpMethod.GET)){
             this.httpRequestParameters = queryStringDecoder.getParameters();
         }
-        byte[] data = this.getHttpRequestData();
+        byte[] data = this.getHttpRequestContentAsBytes();
         if(data != null){
             String queryString = "?" + new String(data);
             QueryStringDecoder decoder = new QueryStringDecoder(queryString);

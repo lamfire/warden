@@ -51,7 +51,7 @@ public abstract class ActionSupport implements Action {
 
     @Override
     public final void execute(ActionContext context) {
-        execute(context,context.getHttpRequestData(),context.getHttpResponseWriter());
+        execute(context,context.getHttpRequestContentAsBytes(),context.getHttpResponseWriter());
     }
 
     public abstract void execute(ActionContext context,byte[] message, OutputStream writer)  ;
