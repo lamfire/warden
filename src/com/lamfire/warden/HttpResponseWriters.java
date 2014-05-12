@@ -44,6 +44,20 @@ class HttpResponseWriters {
             throw new RuntimeException(e);
         }
     }
+
+    public static void writeRedirectResponse(Channel channel, String redirect) {
+        try {
+            if (!channel.isConnected() || !channel.isWritable()) {
+                return;
+            }
+            HttpResponse response = new DefaultHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.valueOf(302));
+            response.setHeader(Names.CONTENT_TYPE, "text/plain; charset=UTF-8");
+            response.setHeader(Names.LOCATION,redirect);
+            channel.write(response);//.addListener(ChannelFutureListener.CLOSE);
+        } catch (Throwable t) {
+            LOGGER.error(t.getMessage(),t);
+        }
+    }
 	
 	public static void writeResponse(Channel channel, HttpResponse response,byte[] responseMessage) {
 		try {

@@ -20,6 +20,9 @@ public class TestAction implements Action {
 
 	@Override
 	public void execute(ActionContext context) {
+
+        System.out.println(context.getHttpRequest().getHeaders());
+
 		JSON js = new JSON();
 		js.put("status", 200);
 		js.put("timestrap", System.currentTimeMillis());

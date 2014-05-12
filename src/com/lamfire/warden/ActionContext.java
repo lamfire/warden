@@ -61,6 +61,10 @@ public class ActionContext {
         }
     }
 
+    public void sendRedirect(String redirectUrl){
+        HttpResponseWriters.writeRedirectResponse(getChannel(),redirectUrl);
+    }
+
     public synchronized byte[] getHttpRequestData(){
         if(this.httpRequestData != null){
             return this.httpRequestData;
@@ -132,6 +136,14 @@ public class ActionContext {
 	public String getHttpRequestUri(){
 		return queryStringDecoder.getPath();
 	}
+
+    public Charset getHttpRequestCharset(){
+        String charset = this.getHttpRequestHeader("Charset");
+        if(charset == null){
+            return Charset.defaultCharset();
+        }
+        return Charset.forName(charset);
+    }
 
     public synchronized Map<String,List<String>> getHttpRequestParameters(){
         if(httpRequestParameters != null){
