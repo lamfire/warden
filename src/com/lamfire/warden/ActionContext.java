@@ -86,7 +86,7 @@ public class ActionContext {
 
 	public String getRemoteAddress(){
 		InetSocketAddress addr = (InetSocketAddress)ctx.getChannel().getRemoteAddress();
-		return addr.getHostName();
+		return addr.getAddress().getHostAddress();
 	}
 	
 	public int getRemotePort(){
