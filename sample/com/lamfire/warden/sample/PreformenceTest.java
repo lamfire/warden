@@ -36,7 +36,7 @@ public class PreformenceTest implements Runnable {
         client.post();
 
         byte[] ret = client.read();
-        System.out.println("POST_RESULT["+ ret.length +"]:" + new String(ret));
+        //System.out.println("POST_RESULT["+ ret.length +"]:" + new String(ret));
 
     }
 
@@ -51,6 +51,16 @@ public class PreformenceTest implements Runnable {
     }
 
     public static void main(String[] args) {
+        Threads.scheduleWithFixedDelay(new Runnable() {
+            int pre = 0;
+            @Override
+            public void run() {
+                int cur = counter.get();
+                System.out.println((cur - pre) +" /s , counter=" + cur);
+                pre = cur;
+            }
+        },1,1,TimeUnit.SECONDS);
+
         int nThreads = 20;
         ThreadPoolExecutor executor = new ThreadPoolExecutor(nThreads, nThreads,0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>()) ;
 
