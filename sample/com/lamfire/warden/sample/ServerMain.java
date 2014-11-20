@@ -11,6 +11,7 @@ public class ServerMain {
 		registry.mappingPackage("com.lamfire.warden.sample");
 		
 		HttpServer server = new HttpServer("0.0.0.0", 8080);
+        server.setWorkThreads(4);
 		server.startup(registry);
 	}
 }

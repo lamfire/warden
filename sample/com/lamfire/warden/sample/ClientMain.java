@@ -1,13 +1,13 @@
 package com.lamfire.warden.sample;
 
-import java.io.IOException;
-
 import com.lamfire.json.JSON;
 import com.lamfire.utils.HttpClient;
 
+import java.io.IOException;
+
 public class ClientMain {
 
-    static String URL = "http://192.168.1.80:8080/echo?a=1";
+    static String URL = "http://127.0.0.1:8080/echo?a=1";
 
 	public static void post() throws IOException {
 		HttpClient client = new HttpClient();

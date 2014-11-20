@@ -25,7 +25,7 @@ public class PreformenceTest implements Runnable {
         client.setContentType(HttpClient.ContentType.application_x_www_form_urlencoded);
         client.setMethod("POST");
         client.setCharset("UTF-8");
-        client.open("http://192.168.1.80:8080");
+        client.open("http://127.0.0.1:8080");
         //client.open("http://192.168.9.125:8080");
 
 
