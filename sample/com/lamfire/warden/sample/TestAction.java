@@ -4,10 +4,7 @@ package com.lamfire.warden.sample;
 import com.lamfire.json.JSON;
 import com.lamfire.warden.Action;
 import com.lamfire.warden.ActionContext;
-import com.lamfire.warden.ActionSupport;
 import com.lamfire.warden.anno.ACTION;
-
-import java.io.OutputStream;
 
 @ACTION(path="/",enableBoundParameters = true)
 public class TestAction implements Action {
@@ -21,7 +18,7 @@ public class TestAction implements Action {
 	@Override
 	public void execute(ActionContext context) {
 
-        System.out.println(context.getHttpRequest().getHeaders());
+        //System.out.println(context.getHttpRequest().getHeaders());
 
 		JSON js = new JSON();
 		js.put("status", 200);

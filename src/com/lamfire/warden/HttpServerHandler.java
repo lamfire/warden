@@ -1,18 +1,13 @@
 package com.lamfire.warden;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
+import com.lamfire.logger.Logger;
+import org.jboss.netty.channel.*;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 
-import com.lamfire.logger.Logger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class HttpServerHandler extends SimpleChannelUpstreamHandler {
 	private static final Logger LOGGER = Logger.getLogger(HttpServerHandler.class);
@@ -58,14 +53,15 @@ class HttpServerHandler extends SimpleChannelUpstreamHandler {
 
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
 		Throwable cause = e.getCause();
+        LOGGER.error("exceptionCaught", e.getCause());
 		try {
-			if (cause instanceof TooLongFrameException) {
+			if (cause instanceof TooLongFrameException && ctx.getChannel().isWritable()) {
 				HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.BAD_REQUEST);
 				return;
 			}
-			LOGGER.error(e.getCause().getMessage(), e.getCause());
+
 		} catch (Throwable t) {
-			LOGGER.error(t.getMessage(), t);
+
 		}
 	}
 
