@@ -1,5 +1,11 @@
 package com.lamfire.warden;
 
+import com.lamfire.utils.StringUtils;
+import org.jboss.netty.buffer.ChannelBuffer;
+import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelHandlerContext;
+import org.jboss.netty.handler.codec.http.*;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -8,12 +14,6 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import com.lamfire.utils.StringUtils;
-import org.jboss.netty.buffer.ChannelBuffer;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.http.*;
 
 public class ActionContext {
 	private HttpRequest request;
@@ -74,7 +74,8 @@ public class ActionContext {
             this.httpRequestContentAsBytes = queryString.getBytes();
         } else{
             ChannelBuffer reqBuffer = request.getContent();
-            this.httpRequestContentAsBytes = reqBuffer.array();
+            this.httpRequestContentAsBytes = new byte[reqBuffer.capacity()];
+            reqBuffer.getBytes(0,this.httpRequestContentAsBytes);
         }
 
         return this.httpRequestContentAsBytes;
