@@ -1,9 +1,7 @@
 package com.lamfire.warden;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
+import com.lamfire.logger.Logger;
+import com.lamfire.utils.Threads;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -12,7 +10,9 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
-import com.lamfire.logger.Logger;
+import java.net.InetSocketAddress;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class HttpServer {
 	private static final Logger LOGGER = Logger.getLogger(HttpServer.class);
@@ -21,7 +21,6 @@ public class HttpServer {
 	private String hostname;
 	private int port;
 	ExecutorService worker;
-	ExecutorService boss;
 	ServerBootstrap bootstrap;
 
 	public HttpServer( String hostname, int port) {
@@ -31,9 +30,8 @@ public class HttpServer {
 
 	public void startup(ActionRegistry registry) {
         this.registry = registry;
-		this.boss = Executors.newFixedThreadPool(4);
-		this.worker =  Executors.newFixedThreadPool(workThreads);
-		this.bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(this.boss,this.worker));
+		this.worker =  Executors.newFixedThreadPool(workThreads, Threads.makeThreadFactory("Http Service"));
+		this.bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),Executors.newCachedThreadPool()));
 		bootstrap.setPipelineFactory(new ServerPipelineFactory());
 		bootstrap.setOption("child.tcpNoDelay", true);
 		bootstrap.setOption("reuserAddress",true);
@@ -62,8 +60,8 @@ public class HttpServer {
     }
 
     public void shutdown(){
-		this.boss.shutdown();
 		this.worker.shutdown();
+        this.bootstrap.releaseExternalResources();
 		this.bootstrap.shutdown();
 		System.exit(0);
 	}
