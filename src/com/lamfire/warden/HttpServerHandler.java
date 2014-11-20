@@ -11,7 +11,6 @@ import org.jboss.netty.channel.SimpleChannelUpstreamHandler;
 import org.jboss.netty.handler.codec.frame.TooLongFrameException;
 import org.jboss.netty.handler.codec.http.HttpRequest;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
-import org.jboss.netty.handler.codec.http.QueryStringDecoder;
 
 import com.lamfire.logger.Logger;
 
@@ -49,10 +48,10 @@ class HttpServerHandler extends SimpleChannelUpstreamHandler {
             Action action = getAction(context);
             invokeAction(context,action);
 		}catch(ActionNotFoundException exception){
-            HttpResponseWriters.writeError(ctx.getChannel(), HttpResponseStatus.NOT_FOUND);
+            HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.NOT_FOUND);
             LOGGER.error(exception.getMessage(), exception);
         }catch (Throwable t) {
-			HttpResponseWriters.writeError(ctx.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
+			HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
 			LOGGER.error(t.getMessage(), t);
 		}
 	}
@@ -61,7 +60,7 @@ class HttpServerHandler extends SimpleChannelUpstreamHandler {
 		Throwable cause = e.getCause();
 		try {
 			if (cause instanceof TooLongFrameException) {
-				HttpResponseWriters.writeError(ctx.getChannel(), HttpResponseStatus.BAD_REQUEST);
+				HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.BAD_REQUEST);
 				return;
 			}
 			LOGGER.error(e.getCause().getMessage(), e.getCause());

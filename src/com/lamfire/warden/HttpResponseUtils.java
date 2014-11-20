@@ -1,25 +1,25 @@
 package com.lamfire.warden;
 
+import com.lamfire.json.JSON;
+import com.lamfire.logger.Logger;
 import org.jboss.netty.buffer.ChannelBuffer;
 import org.jboss.netty.buffer.ChannelBuffers;
 import org.jboss.netty.channel.Channel;
+import org.jboss.netty.channel.ChannelFuture;
 import org.jboss.netty.channel.ChannelFutureListener;
 import org.jboss.netty.handler.codec.http.DefaultHttpResponse;
+import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.handler.codec.http.HttpResponse;
 import org.jboss.netty.handler.codec.http.HttpResponseStatus;
 import org.jboss.netty.handler.codec.http.HttpVersion;
-import org.jboss.netty.handler.codec.http.HttpHeaders.Names;
 import org.jboss.netty.util.CharsetUtil;
-
-import com.lamfire.json.JSON;
-import com.lamfire.logger.Logger;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 
-class HttpResponseWriters {
-	private static final Logger LOGGER = Logger.getLogger(HttpResponseWriters.class);
+class HttpResponseUtils {
+	private static final Logger LOGGER = Logger.getLogger(HttpResponseUtils.class);
 
     public static void write(OutputStream output,String message) {
         try {
@@ -72,7 +72,9 @@ class HttpResponseWriters {
 			}
 			response.setHeader("Content-Type", "text/html; charset=UTF-8");
 			response.setHeader("Content-Length", String.valueOf(length));
-			channel.write(response).addListener(ChannelFutureListener.CLOSE);
+            ChannelFuture future = channel.write(response);
+            //future.syncUninterruptibly();
+            future.addListener(ChannelFutureListener.CLOSE);
 		} catch (Throwable t) {
 			LOGGER.error(t.getMessage(),t);
 		}

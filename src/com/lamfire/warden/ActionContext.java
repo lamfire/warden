@@ -62,7 +62,7 @@ public class ActionContext {
     }
 
     public void sendRedirect(String redirectUrl){
-        HttpResponseWriters.writeRedirectResponse(getChannel(),redirectUrl);
+        HttpResponseUtils.writeRedirectResponse(getChannel(), redirectUrl);
     }
 
     public synchronized byte[] getHttpRequestContentAsBytes(){
