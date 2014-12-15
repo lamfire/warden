@@ -7,6 +7,7 @@ import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.jboss.netty.handler.codec.http.HttpChunkAggregator;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
 
@@ -18,6 +19,7 @@ public class HttpServer {
 	private static final Logger LOGGER = Logger.getLogger(HttpServer.class);
 	private ActionRegistry registry;
     private int workThreads = 32;
+    private int maxPostContentSize = 65536;
 	private String hostname;
 	private int port;
 	ExecutorService worker;
@@ -27,6 +29,14 @@ public class HttpServer {
 		this.hostname = hostname;
 		this.port = port;
 	}
+
+    public int getMaxPostContentSize() {
+        return maxPostContentSize;
+    }
+
+    public void setMaxPostContentSize(int maxPostContentSize) {
+        this.maxPostContentSize = maxPostContentSize;
+    }
 
 	public void startup(ActionRegistry registry) {
         this.registry = registry;
@@ -46,6 +56,7 @@ public class HttpServer {
 			ChannelPipeline pipeline = Channels.pipeline();
 			pipeline.addLast("decoder", new HttpRequestDecoder());
 			pipeline.addLast("encoder", new HttpResponseEncoder());
+            pipeline.addLast("aggregator", new HttpChunkAggregator(maxPostContentSize));
 			pipeline.addLast("handler", new HttpServerHandler(registry,worker));
 			return pipeline;
 		}
