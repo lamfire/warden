@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" name="warden-0.9.1">
-    <output-path>$PROJECT_DIR$/build</output-path>
-    <root id="archive" name="warden-0.9.1.jar">
-      <element id="module-output" name="warden" />
-    </root>
-  </artifact>
-</component>
