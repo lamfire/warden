@@ -32,37 +32,29 @@ class HttpServerHandler extends SimpleChannelUpstreamHandler {
 
 	protected void invokeAction(ActionContext context, Action action) {
 		ActionTask task = new ActionTask(context, action);
+        //task.run();
 		this.worker.submit(task);
 	}
 
 	public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
 		HttpRequest request = (HttpRequest) e.getMessage();
-
 		try {
             ActionContext context = new ActionContext(ctx, request);
             Action action = getAction(context);
             invokeAction(context,action);
 		}catch(ActionNotFoundException exception){
-            HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.NOT_FOUND);
+            HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.NOT_FOUND,false);
             LOGGER.error(exception.getMessage(), exception);
         }catch (Throwable t) {
-			HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
+			//HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR,false);
 			LOGGER.error(t.getMessage(), t);
 		}
 	}
 
 	public void exceptionCaught(ChannelHandlerContext ctx, ExceptionEvent e) {
-		Throwable cause = e.getCause();
-        LOGGER.error("exceptionCaught", e.getCause());
-		try {
-			if (cause instanceof TooLongFrameException && ctx.getChannel().isWritable()) {
-				HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.BAD_REQUEST);
-				return;
-			}
-
-		} catch (Throwable t) {
-
-		}
+		//Throwable cause = e.getCause();
+        //LOGGER.error("exceptionCaught", e.getCause());
+        ctx.getChannel().close();
 	}
 
 	@Override

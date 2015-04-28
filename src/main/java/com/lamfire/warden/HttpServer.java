@@ -22,8 +22,10 @@ public class HttpServer {
     private int maxPostContentSize = 65536;
 	private String hostname;
 	private int port;
-	ExecutorService worker;
-	ServerBootstrap bootstrap;
+	private ExecutorService worker;
+	private ServerBootstrap bootstrap;
+
+    private boolean keepAlive = false;
 
 	public HttpServer( String hostname, int port) {
 		this.hostname = hostname;
@@ -43,9 +45,6 @@ public class HttpServer {
 		this.worker =  Executors.newFixedThreadPool(workThreads, Threads.makeThreadFactory("Http Service"));
 		this.bootstrap = new ServerBootstrap(new NioServerSocketChannelFactory(Executors.newCachedThreadPool(),Executors.newCachedThreadPool()));
 		bootstrap.setPipelineFactory(new ServerPipelineFactory());
-		bootstrap.setOption("child.tcpNoDelay", true);
-		bootstrap.setOption("reuserAddress",true);
-		bootstrap.setOption("child.keepAlive", true);
 		bootstrap.bind(new InetSocketAddress(hostname, port));
 		LOGGER.info("Server startup on /" + hostname + ":" + port);
 		

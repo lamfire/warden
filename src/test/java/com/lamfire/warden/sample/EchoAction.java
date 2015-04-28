@@ -2,6 +2,7 @@ package com.lamfire.warden.sample;
 
 
 import com.lamfire.utils.IOUtils;
+import com.lamfire.utils.Threads;
 import com.lamfire.warden.ActionContext;
 import com.lamfire.warden.ActionSupport;
 import com.lamfire.warden.anno.ACTION;
@@ -19,6 +20,7 @@ public class EchoAction extends ActionSupport {
         } catch (IOException e) {
 
         }
+        //Threads.sleep(5000);
     }
 
 }

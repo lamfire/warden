@@ -17,14 +17,21 @@ class ActionTask implements Runnable{
 
 	@Override
 	public void run() {
+        boolean success = true;
+        try {
+            action.execute(this.context);
+        } catch (Throwable t) {
+            success = false;
+            LOGGER.error(t.getMessage(), t);
+        }
+
 		try {
-			action.execute(this.context);
-			HttpResponseUtils.writeResponse(context.getChannel(), context.getHttpResponse(), context.getHttpResponseData());
-		} catch (Throwable t) {
-            Channel channel = context.getChannel();
-            if(channel.isWritable()){
-			    HttpResponseUtils.writeError(context.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR);
+            if(success){
+			    HttpResponseUtils.writeResponse(context, context.getHttpResponse(), context.getHttpResponseData());
+            }else if(context.getChannel().isWritable()){
+                HttpResponseUtils.writeError(context, HttpResponseStatus.INTERNAL_SERVER_ERROR);
             }
+		} catch (Throwable t) {
             LOGGER.error(t.getMessage(), t);
 		}
 	}

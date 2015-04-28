@@ -35,6 +35,13 @@ public class ActionContext {
 		return ctx.getChannel();
 	}
 
+    public boolean isKeepAlive(){
+        boolean keepAlive = request.headers().contains(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.CLOSE, true)
+                || request.getProtocolVersion().equals(HttpVersion.HTTP_1_0)
+                && !request.headers().contains(HttpHeaders.Names.CONNECTION, HttpHeaders.Values.KEEP_ALIVE, true);
+        return keepAlive;
+    }
+
     public void writeResponse(String message) {
         if(message == null){
             return ;
@@ -112,17 +119,17 @@ public class ActionContext {
 
     public String getRealRemoteAddr() {
         String addr;
-        String forwardedFor =  request.getHeader("X-Forwarded-For");
+        String forwardedFor =  request.headers().get("X-Forwarded-For");
         if((addr = findAddress(forwardedFor)) != null){
             return addr.trim();
         }
 
-        forwardedFor = request.getHeader("Proxy-Client-IP");
+        forwardedFor = request.headers().get("Proxy-Client-IP");
         if((addr = findAddress(forwardedFor)) != null){
             return addr.trim();
         }
 
-        forwardedFor = request.getHeader("WL-Proxy-Client-IP");
+        forwardedFor = request.headers().get("WL-Proxy-Client-IP");
         if((addr = findAddress(forwardedFor)) != null){
             return addr.trim();
         }
@@ -131,11 +138,11 @@ public class ActionContext {
     }
 
 	public String getHttpRequestHeader(String key){
-		return request.getHeader(key);
+		return request.headers().get(key);
 	}
 	
 	public Set<String> getHttpRequestHeaderNames(){
-		return request.getHeaderNames();
+		return request.headers().names();
 	}
 	
 	public String getHttpRequestUri(){
@@ -184,7 +191,7 @@ public class ActionContext {
     }
 	
 	public void addHttpResponseHeader(String key,Object value){
-		this.response.addHeader(key, value);
+		this.response.headers().set(key, value);
 	}
 	
 	public void setHttpResponseStatus(HttpResponseStatus status){

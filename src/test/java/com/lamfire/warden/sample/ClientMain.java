@@ -45,7 +45,8 @@ public class ClientMain {
 	}
 
 	public static void main(String[] args) throws Exception {
+        for(int i=0;i<1000;i++)
 		post();
-		get();
+		//get();
 	}
 }
