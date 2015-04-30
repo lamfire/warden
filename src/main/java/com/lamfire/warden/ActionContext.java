@@ -188,7 +188,7 @@ public class ActionContext {
             return null;
         }
         List<String> list =  params.get(name);
-        if(!list.isEmpty()){
+        if(list!=null && !list.isEmpty()){
             return list.get(0);
         }
         return null;
