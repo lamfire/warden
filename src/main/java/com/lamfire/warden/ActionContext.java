@@ -175,7 +175,11 @@ public class ActionContext {
     }
 
     public List<String> getHttpRequestParameters(String name){
-        return  getHttpRequestParameters().get(name);
+        Map<String,List<String>> params = getHttpRequestParameters();
+        if(params == null){
+            return null;
+        }
+        return  params.get(name);
     }
 
     public String getHttpRequestParameter(String name){
@@ -191,7 +195,11 @@ public class ActionContext {
     }
 
     public Set<String> getHttpRequestParameterNames(){
-        return getHttpRequestParameters().keySet();
+        Map<String,List<String>> params = getHttpRequestParameters();
+        if(params == null){
+            return null;
+        }
+        return params.keySet();
     }
 	
 	public void addHttpResponseHeader(String key,Object value){
