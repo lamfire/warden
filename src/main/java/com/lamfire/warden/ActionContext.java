@@ -179,7 +179,11 @@ public class ActionContext {
     }
 
     public String getHttpRequestParameter(String name){
-        List<String> list =  getHttpRequestParameters().get(name);
+        Map<String,List<String>> params = getHttpRequestParameters();
+        if(params == null){
+            return null;
+        }
+        List<String> list =  params.get(name);
         if(!list.isEmpty()){
             return list.get(0);
         }
