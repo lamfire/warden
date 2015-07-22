@@ -29,7 +29,7 @@ class ActionTask implements Runnable{
             if(success){
 			    HttpResponseUtils.writeResponse(context, context.getHttpResponse(), context.getHttpResponseData());
             }else if(context.getChannel().isWritable()){
-                HttpResponseUtils.writeError(context, HttpResponseStatus.INTERNAL_SERVER_ERROR);
+                HttpResponseUtils.writeResponseStatus(context, HttpResponseStatus.INTERNAL_SERVER_ERROR);
             }
 		} catch (Throwable t) {
             LOGGER.error(t.getMessage(), t);

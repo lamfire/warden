@@ -43,7 +43,7 @@ class HttpServerHandler extends SimpleChannelUpstreamHandler {
             Action action = getAction(context);
             invokeAction(context,action);
 		}catch(ActionNotFoundException exception){
-            HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.NOT_FOUND,false);
+            HttpResponseUtils.writeResponseStatus(ctx.getChannel(), HttpResponseStatus.NOT_FOUND,false);
             LOGGER.error(exception.getMessage(), exception);
         }catch (Throwable t) {
 			//HttpResponseUtils.writeError(ctx.getChannel(), HttpResponseStatus.INTERNAL_SERVER_ERROR,false);

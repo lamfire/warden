@@ -19,7 +19,7 @@ public class ClientMain {
 		
 		JSON js = new JSON();
 		js.put("appkey", "983573123");
-		js.put("appsecrt", "{'a':'6788945141'}");
+		js.put("appsecrt",System.currentTimeMillis());
 		
 		client.post(js.toJSONString().getBytes());
 
@@ -45,7 +45,7 @@ public class ClientMain {
 	}
 
 	public static void main(String[] args) throws Exception {
-        for(int i=0;i<1000;i++)
+        while(true)
 		post();
 		//get();
 	}

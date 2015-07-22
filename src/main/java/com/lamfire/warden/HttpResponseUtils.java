@@ -58,15 +58,15 @@ class HttpResponseUtils {
 		}
 	}
 
-	public static void writeError(ActionContext context, HttpResponseStatus status) {
-        writeError(context.getChannel(),status,context.isKeepAlive());
+	public static void writeResponseStatus(ActionContext context, HttpResponseStatus status) {
+        writeResponseStatus(context.getChannel(),status,context.isKeepAlive());
 	}
 
-    public static void writeError(Channel channel, HttpResponseStatus status) {
-        writeError(channel,status,false);
+    public static void writeResponseStatus(Channel channel, HttpResponseStatus status) {
+        writeResponseStatus(channel,status,false);
     }
 
-    public static void writeError(Channel channel, HttpResponseStatus status,boolean keepAlive) {
+    public static void writeResponseStatus(Channel channel, HttpResponseStatus status,boolean keepAlive) {
         if (!channel.isConnected() || !channel.isWritable()) {
             return;
         }

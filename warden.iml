@@ -14,7 +14,7 @@
     <orderEntry type="library" name="Maven: log4j:log4j:1.2.17" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: io.netty:netty:3.9.5.Final" level="project" />
-    <orderEntry type="library" name="Maven: com.lamfire:lamfire:2.2.8" level="project" />
+    <orderEntry type="library" name="Maven: com.lamfire:lamfire:2.3.5" level="project" />
   </component>
 </module>
 

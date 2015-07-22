@@ -65,7 +65,7 @@ public class PreformenceTest implements Runnable {
         int nThreads = 20;
         ThreadPoolExecutor executor = new ThreadPoolExecutor(nThreads, nThreads,0L, TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>()) ;
 
-        for(int i=0;i<100000;i++){
+        while(true){
             if(executor.getQueue().size() < 1000){
                 executor.submit( new PreformenceTest());
             }else{

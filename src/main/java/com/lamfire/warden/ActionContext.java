@@ -72,6 +72,10 @@ public class ActionContext {
         HttpResponseUtils.writeRedirectResponse(getChannel(), redirectUrl);
     }
 
+    public void sendResponseStatus(HttpResponseStatus status){
+        HttpResponseUtils.writeResponseStatus(getChannel(),status);
+    }
+
     public synchronized byte[] getHttpRequestContentAsBytes(){
         if(this.httpRequestContentAsBytes != null){
             return this.httpRequestContentAsBytes;
@@ -204,10 +208,6 @@ public class ActionContext {
 	
 	public void addHttpResponseHeader(String key,Object value){
 		this.response.headers().set(key, value);
-	}
-	
-	public void setHttpResponseStatus(HttpResponseStatus status){
-		this.response.setStatus(status);
 	}
 
 	public HttpRequest getHttpRequest() {
